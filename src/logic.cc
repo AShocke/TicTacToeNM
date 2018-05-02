@@ -5,7 +5,30 @@
 #include "logic.h"
 #include <iostream>
 #include <fstream>
+/*
+ * Constructors
+ */ 
+Logic::Logic(std::string path) {
+	std::ifstream f;
+	f.open(path);
+	if (f.is_open()) {
+		f >> num_to_win;
+		f >> row_size >> column_size;
+		for (int i = 0; i < row_size; i++) {
+			for (int j = 0; j < column_size; j++) {
+				f >> board[i][j];
+			}
+		}
+		f.close();
+	}
+	else {
+		file_error_msg(path);
+	}
+}
 
+/*
+ * Conditions
+ */
 bool Logic::is_board_full() {
 	for (int i = 0; i < row_size; i++) {
 		for (int j = 0; j < column_size; j++) {
@@ -267,6 +290,9 @@ void Logic::print() {
 	printf("\n");
 }
 
+/*
+ * File IO saving files
+ */
 void Logic::save(std::string path) {
 	std::ofstream o;
 	o.open(path);
@@ -282,6 +308,6 @@ void Logic::save(std::string path) {
 		o.close();
 	}
 	else {
-		std::cerr << "Error opening, file";
+		file_error_msg(path);
 	}
 }

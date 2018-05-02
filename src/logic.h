@@ -4,7 +4,7 @@
 #ifndef LOGIC
 #define LOGIC
 #include <vector>
-#include <cstdio>
+#include <iostream>
 #include <cmath>
 #include <climits>
 #include <fstream>
@@ -24,6 +24,9 @@ private:
 	// digonal from right to left
 	bool n_in_a_diagonal_right_to_left();
 	// Validity Functions
+	void file_error_msg(std::string path) {
+		std::cerr << "ERROR: Could not open file " << path << "\n";
+	}
 public:
 	int n_in_a_row(int player);
 	int n_in_a_column(int player);
@@ -58,6 +61,7 @@ public:
 		column_size = l.get_column_size();
 		board = l.get_board();
 	}
+	Logic(std::string path);
 	void init();
 	void print();
 	bool play(int x, int y, int player) {
