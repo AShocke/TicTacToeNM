@@ -25,12 +25,15 @@ private:
 	int opponent_;
 	int max_depth_;
 	Node* root_; // for printing purposes
-	Node* generate_tree(Logic l, Node* n );
+	Node* generate_tree(Logic l, Node* n);
 	Node* generate_tree_r(Node* r, int x,
-						  int y, Logic l, int depth, bool is_player_turn);
+						  int y, Logic l, int depth, bool is_player_);
 	std::vector<Node*> minimax_tree(Node* root);
 	Node* choose_move(std::vector<Node*>);
-	int minimax_tree_r(Node* n);
+	int minimax_tree_r(Node* n, int beta, int alpha);
+	void sort_tree(std::vector<Node*> c); // sorts initial nodes by state values, most promising states first.
+					 // Using mergesort.
+	int find_depth();  
 public:
 	/*
 	 * takes in a Logic instance and a specified player (1 or 2)
@@ -48,14 +51,7 @@ public:
 	~Minimax() {
 		delete root_;
 	}
-	void play(Logic& l) {
-		Node* root = new Node;
-		root->root = true;
-		root = generate_tree(l, root);
-	   	Node* move = choose_move(minimax_tree(root));
-		l.play(move->x, move->y, player_);
-		root_ = root;
-	}
+	void play(Logic& l);
 	void print_tree_r(Node* n, int indent);
 	void print_tree();
 };

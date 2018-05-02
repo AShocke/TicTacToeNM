@@ -3,7 +3,8 @@
  * logic.cc
  */
 #include "logic.h"
-#include <cstdio>
+#include <iostream>
+#include <fstream>
 
 bool Logic::is_board_full() {
 	for (int i = 0; i < row_size; i++) {
@@ -264,4 +265,23 @@ void Logic::print() {
 		print_line(line_length );
 	}
 	printf("\n");
+}
+
+void Logic::save(std::string path) {
+	std::ofstream o;
+	o.open(path);
+	if (o.is_open()) {
+		o << num_to_win << "\n";
+		o << row_size << " " << column_size << "\n";
+		for (int i = 0; i < board.size(); i++) {
+			for (int j = 0; j < board[0].size(); j++) {
+				o << board[i][j] << " ";
+			}
+			o << "\n";
+		}
+		o.close();
+	}
+	else {
+		std::cerr << "Error opening, file";
+	}
 }

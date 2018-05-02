@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cmath>
 #include <climits>
+#include <fstream>
 class Logic {
 private:
 	char player_one = 'O';
@@ -91,6 +92,7 @@ public:
 	int get_column_size() {
 		return column_size;
 	}
+	void save(std::string path);
 	
 };
 

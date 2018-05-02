@@ -3,6 +3,7 @@
  */
 #include <cstdlib>
 #include <iostream>
+#include <cmath>
 #include <iomanip>
 #include "minimax.h"
 #include "limits.h"
@@ -58,7 +59,7 @@ std::vector<Node*> Minimax::minimax_tree(Node* root) {
 	int best = INT_MIN;
 	printf("children size: %ld\n", root->children.size());
 	for (int i  = 0; i < root->children.size(); i++) {
-		int curr = minimax_tree_r(root->children[i]);
+		int curr = minimax_tree_r(root->children[i], INT_MIN, INT_MAX);
 //		printf("current :%d\n", curr);
 		if (curr > best) {
 			optimal.clear();
@@ -75,14 +76,21 @@ std::vector<Node*> Minimax::minimax_tree(Node* root) {
 	}
 	return optimal;
 }
-
-int Minimax::minimax_tree_r(Node* root) {
+// Helpers
+// Sort tree by best
+int Minimax::minimax_tree_r(Node* root, int beta, int alpha) {
 	if (root->children.size() == 0)
-		return root->metric;
+		return root->metric; 
 	if (root->player_move) {
 		int best = INT_MAX;
 		for (int i = 0; i < root->children.size(); i++) {
-			best = std::min(best, minimax_tree_r(root->children[i]));
+			if (best < alpha) {
+				alpha = best;
+			}
+			best = std::min(best, minimax_tree_r(root->children[i], beta, alpha));
+			if (beta > alpha) {
+				return best; 
+			}
 		}
 //					printf("maximizing best: %d\n", best);
 		return best;
@@ -90,13 +98,20 @@ int Minimax::minimax_tree_r(Node* root) {
 	else {
 		int best = INT_MIN;
 		for (int i = 0; i < root->children.size(); i++) {
-			best = std::max(best, minimax_tree_r(root->children[i]));
-		
+			if (best > beta) {
+				beta = best;
+			}
+			best = std::max(best, minimax_tree_r(root->children[i], beta, alpha));
+			if (beta > alpha) {
+				return best;
+			}
 		}
 //			printf("minimizing best: %d\n", best);
 		return best;
 	}
 }
+
+
 // chooses a move randomly based on optimal choices
 Node* Minimax::choose_move(std::vector<Node*> b) {
 	srand(time(NULL));
@@ -109,7 +124,7 @@ void Minimax::print_tree() {
 }
 void print_node(Node* n) {
 	printf("(%d %d): %d\n", n->x, n->y, n->metric);
-}
+} 
 void Minimax::print_tree_r(Node* n, int indent) {
 
 	if (n->children.size() == 0) {
@@ -133,3 +148,19 @@ void Minimax::print_tree_r(Node* n, int indent) {
 	}
 }
 
+void Minimax::play(Logic& l) {
+		Node* root = new Node;
+		root->root = true;
+		root = generate_tree(l, root);
+	   	Node* move = choose_move(minimax_tree(root));
+		l.play(move->x, move->y, player_);
+		root_ = root;
+}
+
+// TODO
+
+int Minimax::find_depth() {
+	// Using a threshold 
+
+	return 0;
+}

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <ctime>
 
+const std::string GAME = "game.txt";
 int find_winner(Logic& l) {
 	if (l.is_game_over()) {
 			if (l.get_metric(1) == INT_MAX) {
@@ -25,39 +26,45 @@ int find_winner(Logic& l) {
 		}
 	return -1;
 }
-bool ai_play(Minimax& ai, Logic& l) {
+bool ai_play(Minimax& ai, Logic& l, int ai_turn) {
 	printf("AI turn...\n");
 	ai.play(l);
 	//ai.print_tree();
 	l.print();
 			
 	if (l.is_game_over()) {
+		if (l.get_metric(ai_turn) == INT_MAX) {
 		printf("AI wins!\n");
-		return true; 
+		    return true;
+		}
+		else {
+			printf ("Draw!\n");
+			return true;
+		}
 	}
-	
+	return false;
 }
 bool human_play(Logic& l, int h) {
 	printf("Your turn: \n");
 		int x, y;
 		scanf("%d %d", &x, &y);
 		while (!l.is_valid(x, y)) {
-			printf("Invalid move try again (-1 to quit): ");
-			scanf("%d", &x);
-			if (x == -1) {
-				printf("Goodbye.\n");
-				return 0;
-			}
-			else {
-				scanf("%d", &y);
-			}
+			printf("Invalid move try again: ");
+			scanf("%d", &y);
 		}
 		l.play(x, y, h);
 		if (l.is_game_over()) {
 			l.print();
-			printf("Human player wins!\n");
-			return 0;
+			if (l.get_metric(h) == INT_MAX) {
+				printf("Human player wins!\n");
+				return true;
+			}
+			else {
+				printf ("Draw!\n");
+				return false;
+			}
 		}
+		return false;
 }
 void ai_vs_ai(Logic& l) {
 	bool play = true;
@@ -65,9 +72,9 @@ void ai_vs_ai(Logic& l) {
 		l.init();
 		int depth1;
 		int depth2;
-		printf("AI one depth: ");
+		printf("AI 1 depth: ");
 		scanf("%d", &depth1);
-		printf("AI two depth: ");
+		printf("AI 2 depth: ");
 		scanf("%d", &depth2);
 		l.print();
 		Minimax ai_1(l, 1, depth1);
@@ -85,8 +92,10 @@ void ai_vs_ai(Logic& l) {
 		char choice;
 		printf("Play this mode again? (Y/n): ");
 		scanf(" %c", &choice);
-		if (!(choice == 'y' || choice == 'Y'))
+		if (!(choice == 'y' || choice == 'Y')) {
 			play = false;
+			l.save(GAME);
+		}
 	}
 }
 void player_vs_ai(Logic& l) {
@@ -98,7 +107,7 @@ void player_vs_ai(Logic& l) {
 		scanf("%d", &depth);
 		l.print();
 		srand(time(NULL));
-		int  human_turn = rand() % 2;
+		int human_turn = rand() % 3;
 		printf("human_turn: %d\n", human_turn);
 		bool is_human_turn = (human_turn == 1)? true : false;
 		int ai_turn = (human_turn == 1)? 2 : 1;
@@ -109,7 +118,7 @@ void player_vs_ai(Logic& l) {
 				is_human_turn = false;
 			}
 			else {
-				ai_play(ai, l);
+				ai_play(ai, l, ai_turn);
 				is_human_turn = true;
 			}
 
